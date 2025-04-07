@@ -1,0 +1,54 @@
+name: my_plant_app
+description: "A new Flutter project."
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flutter_launcher_icons: ^0.14.3
+  shared_preferences: ^2.5.3
+  url_launcher: ^6.3.1
+  http: ^0.13.6
+  image_picker: ^1.0.4
+  carousel_slider: ^5.0.0
+  provider: ^6.1.4
+  
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter_launcher_icons: 
+  android: "launcher_icon" 
+  image_path: "assets/images/plante_icon.png"
+  ios: true
+  background_colors: "#FFFFFF" 
+  min_sdk_android:  21
+     
+
+flutter:
+  uses-material-design: true
+
+  # Définir les polices personnalisées
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Poppins-Medium.ttf
+          weight: 500
+
+  # Ajouter les fichiers d'assets (polices, images, etc.)
+  assets:
+    - assets/fonts/
+    - assets/images/
+  
+    
