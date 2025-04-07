@@ -7,12 +7,12 @@ class PackTisanePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true, // Centrer le titre
+        centerTitle: true,
         title: const Text(
           'Pack de Tisane',
           style: TextStyle(
             fontFamily: 'Poppins',
-            color: Colors.white, // Texte en blanc
+            color: Colors.white,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -30,6 +30,10 @@ class PackTisanePage extends StatelessWidget {
             _buildTisaneCard(context, 'Relaxation', Icons.spa, Colors.purple, 'relaxation'),
             _buildTisaneCard(context, 'Énergie', Icons.bolt, Colors.orange, 'energie'),
             _buildTisaneCard(context, 'Détox', Icons.clean_hands, Colors.blue, 'detox'),
+            _buildTisaneCard(context, 'Sommeil', Icons.bedtime, Colors.indigo, 'sommeil'),
+            _buildTisaneCard(context, 'Beauté', Icons.face, Colors.pink, 'beaute'),
+            _buildTisaneCard(context, 'Immunité', Icons.shield, Colors.brown, 'immunite'),
+            _buildTisaneCard(context, 'Autres Packs', Icons.category, Colors.grey, 'autres'),
           ],
         ),
       ),
@@ -39,7 +43,7 @@ class PackTisanePage extends StatelessWidget {
   Widget _buildTisaneCard(BuildContext context, String title, IconData icon, Color color, String routeName) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/$routeName'); // Redirection vers une route (à définir dans main.dart)
+        Navigator.pushNamed(context, '/$routeName');
       },
       child: Card(
         color: color,
