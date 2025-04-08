@@ -9,8 +9,9 @@ class PackDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title, style: const TextStyle(fontFamily: 'Poppins')),
+        title: Text(title, style: const TextStyle(fontFamily: 'Poppins',color: Colors.white)),
         backgroundColor: Colors.green,
+        iconTheme: const IconThemeData(color: Colors.white)
       ),
       body: Center(
         child: Text(

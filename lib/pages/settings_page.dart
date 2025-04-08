@@ -12,17 +12,16 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  String _selectedLanguage = 'Français'; // Langue par défaut
-  bool _notificationsEnabled = false; // Notifications désactivées par défaut
-  bool _isDarkMode = false; // Mode clair par défaut
+  String _selectedLanguage = 'Français';
+  bool _notificationsEnabled = false;
+  bool _isDarkMode = false;
 
   @override
   void initState() {
     super.initState();
-    _loadPreferences(); // Charger les paramètres sauvegardés
+    _loadPreferences();
   }
 
-  // Charger les préférences enregistrées
   Future<void> _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -32,7 +31,6 @@ class _SettingsPageState extends State<SettingsPage> {
     });
   }
 
-  // Sauvegarder une préférence
   Future<void> _savePreference(String key, dynamic value) async {
     final prefs = await SharedPreferences.getInstance();
     if (value is String) {
@@ -42,24 +40,54 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
+  void _applyTheme(bool isDarkMode) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    themeNotifier.toggleTheme(isDarkMode);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black87;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Paramètres', style: TextStyle(fontFamily: 'Poppins',color: Colors.white)),
+        title: const Text(
+          'Paramètres',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: Colors.green,
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white), // Icône retour en blanc
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Sélecteur de langue
-            Text('Langue', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 30),
+
+            // Langue
+            Text(
+              'Langue',
+              style: TextStyle(
+                fontSize: 16,
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w600,
+                color: textColor,
+              ),
+            ),
             DropdownButton<String>(
               value: _selectedLanguage,
               items: ['Français', 'Anglais', 'Mina'].map((langue) {
-                return DropdownMenuItem(value: langue, child: Text(langue));
+                return DropdownMenuItem(
+                  value: langue,
+                  child: Text(langue, style: const TextStyle(fontFamily: 'Poppins')),
+                );
               }).toList(),
               onChanged: (value) {
                 setState(() {
@@ -68,13 +96,16 @@ class _SettingsPageState extends State<SettingsPage> {
                 _savePreference('language', value);
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
 
-            // Paramètre de notification
+            // Notifications
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Activer les notifications', style: TextStyle(fontSize: 18)),
+                Text(
+                  'Activer les notifications',
+                  style: TextStyle(fontSize: 16, fontFamily: 'Poppins', color: textColor),
+                ),
                 Switch(
                   value: _notificationsEnabled,
                   onChanged: (value) {
@@ -88,11 +119,14 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             const SizedBox(height: 20),
 
-            // Paramètre mode sombre
+            // Mode sombre
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Mode sombre', style: TextStyle(fontSize: 18)),
+                Text(
+                  'Mode sombre',
+                  style: TextStyle(fontSize: 16, fontFamily: 'Poppins', color: textColor),
+                ),
                 Switch(
                   value: _isDarkMode,
                   onChanged: (value) {
@@ -100,7 +134,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       _isDarkMode = value;
                     });
                     _savePreference('darkMode', value);
-                    // Appliquer le mode sombre à toute l'application
                     _applyTheme(value);
                   },
                 ),
@@ -111,9 +144,4 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
     );
   }
-
-  void _applyTheme(bool isDarkMode) {
-  final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-  themeNotifier.toggleTheme(isDarkMode);
-}
 }

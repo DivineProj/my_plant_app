@@ -141,7 +141,8 @@ class HomeScreenContent extends StatelessWidget {
               return Scaffold(
                 appBar: AppBar(
                   backgroundColor: Colors.green,
-                  title: Text(categories[index], style: const TextStyle(fontFamily: 'Poppins')),
+                  title: Text(categories[index], style: const TextStyle(fontFamily: 'Poppins',color: Colors.white)),
+                  iconTheme: const IconThemeData(color: Colors.white)
                 ),
                 body: Center(
                   child: Text(

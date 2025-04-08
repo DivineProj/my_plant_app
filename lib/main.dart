@@ -49,8 +49,12 @@ class MyApp extends StatelessWidget {
             '/relaxation': (context) => const PackDetailPage(title: 'Relaxation'),
             '/energie': (context) => const PackDetailPage(title: 'Énergie'),
             '/detox': (context) => const PackDetailPage(title: 'Détox'),
+            '/sommeil': (context) => const PackDetailPage(title: 'Sommeil'),
+            '/beaute': (context) => const PackDetailPage(title: 'Beauté'),
+            '/immunite': (context) => const PackDetailPage(title: 'Immunité'),
+            '/autres': (context) => const PackDetailPage(title: 'Autres Plantes'),
           },
-        );
+);
       },
     );
   }
