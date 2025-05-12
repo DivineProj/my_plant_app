@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ComptePage extends StatefulWidget {
-  const ComptePage({super.key});
+ const ComptePage({super.key});
 
   @override
   State<ComptePage> createState() => _ComptePageState();

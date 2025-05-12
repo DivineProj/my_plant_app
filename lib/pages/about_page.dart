@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutPage extends StatelessWidget {
-  const AboutPage({super.key});
+   const AboutPage({super.key});
 
   void _launchWebsite() async {
     const url = 'https://www.votre-site.com';
@@ -22,7 +22,7 @@ class AboutPage extends StatelessWidget {
             style: TextStyle(
                 fontFamily: 'Poppins',
                 color: Colors.white,
-                fontWeight: FontWeight.bold)),
+                )),
         backgroundColor: Colors.green,
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white)

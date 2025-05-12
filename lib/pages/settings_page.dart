@@ -57,7 +57,7 @@ class _SettingsPageState extends State<SettingsPage> {
           style: TextStyle(
             fontFamily: 'Poppins',
             color: Colors.white,
-            fontWeight: FontWeight.bold,
+            
           ),
         ),
         backgroundColor: Colors.green,

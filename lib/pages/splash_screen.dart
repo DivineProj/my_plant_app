@@ -34,7 +34,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF2E7D32),
+      backgroundColor:  Colors.green,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -42,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen> {
             const Icon(Icons.local_florist, size: 80, color: Colors.white),
             const SizedBox(height: 20),
             const Text(
-              'Plantes Médicinale',
+              'Plantes Médicinales',
               style: TextStyle(
                 fontSize: 24,
                 fontFamily: 'Poppins',
