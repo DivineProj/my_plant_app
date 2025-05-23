@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../pages/specialists_page.dart';
@@ -6,11 +8,13 @@ import '../pages/settings_page.dart';
 import '../pages/about_page.dart';
 import '../pages/tisane_page.dart';
 import '../pages/compte_page.dart';
+import '../services/api_service.dart';  
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _HomeScreenState createState() => _HomeScreenState();
 }
 
@@ -188,146 +192,159 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class Plante {
-  final String nom;
-  final String nomScientifique;
-  final String imageUrl;
-
-  Plante({
-    required this.nom,
-    required this.nomScientifique,
-    required this.imageUrl,
-  });
-}
-
 class HomeScreenContent extends StatelessWidget {
   const HomeScreenContent({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> plantes = [
-      {"nom": "Aloe Vera", "image": "assets/images/aloe.png"},
-      {"nom": "Armoise", "image": "assets/images/armoise.png"},
-      {"nom": "Basilic", "image": "assets/images/basilic.png"},
-      {"nom": "Baobab", "image": "assets/images/baobab.png"},
-      {"nom": "Citronnelle", "image": "assets/images/citronnelle.png"},
-      {"nom": "Cajanus cajan", "image": "assets/images/cajanus_cajan.png"},
-      {"nom": "Daniellia oliveri", "image": "assets/images/daniellia_oliveri.png"},
-      {"nom": "Dichrostachys ", "image": "assets/images/dichrostachys_cinerea.png"},
-    ];
+    final ApiService apiService = ApiService();
 
-    // Trier par ordre alphabétique
-    plantes.sort((a, b) => a['nom']!.compareTo(b['nom']!));
+    return FutureBuilder<List<dynamic>>(
+      future: apiService.fetchPlantes(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-    // Regrouper par première lettre
-    final Map<String, List<Map<String, String>>> grouped = {};
-    for (var plante in plantes) {
-      final lettre = plante['nom']![0].toUpperCase();
-      grouped.putIfAbsent(lettre, () => []).add(plante);
-    }
+        if (snapshot.hasError) {
+          return Center(child: Text('Erreur: ${snapshot.error}'));
+        }
 
-    return ListView(
-      children: grouped.entries.map((entry) {
-        final lettre = entry.key;
-        final listePlantes = entry.value;
+        List<dynamic> plantes = snapshot.data!;
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: Padding(
-                padding: const EdgeInsets.only(top: 0),
-                child: Text(
-                  lettre,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Poppins',
-                    color: Colors.green,
-                  ),
-                ),
-              ),
-            ),
-            GridView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: listePlantes.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
-                childAspectRatio: 3 / 3.5,
-              ),
-              itemBuilder: (context, index) {
-                final plante = listePlantes[index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) {
-                      return Scaffold(
-                        appBar: AppBar(
-                          backgroundColor: Colors.green,
-                          title: Text(plante['nom']!,
-                              style: const TextStyle(fontFamily: 'Poppins')),
-                          iconTheme:
-                              const IconThemeData(color: Colors.white),
-                        ),
-                        body: Center(
-                          child: Text(
-                            "Description de ${plante['nom']} ici...",
-                            style: const TextStyle(fontFamily: 'Poppins'),
-                          ),
-                        ),
-                      );
-                    }));
-                  },
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        ClipRRect(
-                          borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(10)),
-                          child: Image.asset(
-                            plante['image']!,
-                            height: 120,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Padding(
-                          padding:
-                              const EdgeInsets.symmetric(horizontal: 0),
-                          child: Text(
-                            plante['nom']!,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                      ],
+        // Supprimer les doublons
+        final nomsDejaVus = <String>{};
+        plantes = plantes.where((plante) {
+          final nom = plante['nom_francais'];
+          if (nomsDejaVus.contains(nom)) return false;
+          nomsDejaVus.add(nom);
+          return true;
+        }).toList();
+
+        // Trier par nom
+        plantes.sort((a, b) => a['nom_francais'].compareTo(b['nom_francais']));
+
+        // Regrouper par première lettre
+        final Map<String, List<dynamic>> grouped = {};
+        for (var plante in plantes) {
+          final lettre = plante['nom_francais'][0].toUpperCase();
+          grouped.putIfAbsent(lettre, () => []).add(plante);
+        }
+
+        return ListView(
+          children: grouped.entries.map((entry) {
+            final lettre = entry.key;
+            final listePlantes = entry.value;
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  child: Text(
+                    lettre,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Poppins',
+                      color: Colors.green,
                     ),
                   ),
+                ),
+                GridView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: listePlantes.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                    childAspectRatio: 2 / 1, // Ajusté pour cartes un peu plus compactes
+                  ),
+                  itemBuilder: (context, index) {
+  final plante = listePlantes[index];
+  final nom = plante['nom_francais'];
+final imageUrl = 'http://192.168.50.168:8000/${plante['photo']}';
+
+
+
+
+  print('Chargement image : $imageUrl'); // debug URL
+
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(context, MaterialPageRoute(builder: (_) {
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.green,
+            title: Text(nom, style: const TextStyle(fontFamily: 'Poppins')),
+            iconTheme: const IconThemeData(color: Colors.white),
+          ),
+          body: Center(
+            child: Text(
+              "Description de $nom ici...",
+              style: const TextStyle(fontFamily: 'Poppins'),
+            ),
+          ),
+        );
+      }));
+    },
+    child: Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+            child: Image.network(
+              imageUrl,
+              height: 100,
+              width: double.infinity,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) =>
+                  const Icon(Icons.broken_image, size: 50),
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return const SizedBox(
+                  height: 100,
+                  child: Center(child: CircularProgressIndicator()),
                 );
               },
             ),
-          ],
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: Center(
+              child: Text(
+                nom,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+        ],
+      ),
+    ),
+  );
+}
+
+                ),
+              ],
+            );
+          }).toList(),
         );
-      }).toList(),
+      },
     );
   }
 }
-
 void _showIdentificationOptions(BuildContext context) {
   showModalBottomSheet(
     context: context,
@@ -336,22 +353,24 @@ void _showIdentificationOptions(BuildContext context) {
     ),
     builder: (BuildContext context) {
       return SizedBox(
-        height: 150,
+        height: 160,
         child: Column(
           children: [
             ListTile(
               leading: const Icon(Icons.photo_library),
-              title: const Text('Choisir depuis la galerie'),
+              title: const Text('Choisir depuis la galerie',
+                  style: TextStyle(fontFamily: 'Poppins')),
               onTap: () {
-                // Action pour choisir depuis la galerie
+                // Ajouter la logique pour choisir une image depuis la galerie
                 Navigator.pop(context);
               },
             ),
             ListTile(
               leading: const Icon(Icons.camera_alt),
-              title: const Text('Prendre une photo'),
+              title: const Text('Prendre une photo',
+                  style: TextStyle(fontFamily: 'Poppins')),
               onTap: () {
-                // Action pour prendre une photo
+                // Ajouter la logique pour prendre une photo avec la caméra
                 Navigator.pop(context);
               },
             ),
@@ -361,4 +380,3 @@ void _showIdentificationOptions(BuildContext context) {
     },
   );
 }
-

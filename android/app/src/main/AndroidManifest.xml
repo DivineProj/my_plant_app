@@ -1,8 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="my_plant_app"
-        android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
+android:label="my_plant_app"
+    android:name="${applicationName}"
+    android:icon="@mipmap/launcher_icon"
+    android:requestLegacyExternalStorage="true"
+    android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -30,6 +32,9 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+            <uses-permission android:name="android.permission.INTERNET"/>
+              
+
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
